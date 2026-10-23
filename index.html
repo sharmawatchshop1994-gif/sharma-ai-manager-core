@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sharma AI Manager</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;color:#111827}
+main{max-width:520px;margin:auto;padding:18px}
+header{background:#111827;color:white;padding:20px;border-radius:16px}
+section{background:white;padding:16px;margin-top:14px;border-radius:16px}
+label{display:block;font-weight:bold;margin:14px 0 6px}
+input,textarea,button{box-sizing:border-box;width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;font-size:16px}
+textarea{min-height:120px}
+button{background:#111827;color:white;font-weight:bold;margin-top:12px}
+img{display:none;width:100%;max-height:280px;object-fit:contain;margin-top:12px}
+.stats{display:flex;justify-content:space-between;background:#f3f4f6;padding:12px;margin-top:12px;border-radius:10px}
+.note{font-size:13px;color:#6b7280;line-height:1.5}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h2>⌚ Sharma AI Manager</h2>
+<div>आपकी Watch Shop का डिजिटल मैनेजर</div>
+</header>
+<section>
+<label>Watch की फोटो</label>
+<input id="photo" type="file" accept="image/*">
+<img id="preview" alt="Watch preview">
+
+<label>खरीद कीमत (₹)</label>
+<input id="cost" type="number" placeholder="1200">
+
+<label>बिक्री कीमत (₹)</label>
+<input id="price" type="number" placeholder="1999">
+
+<label>न्यूनतम बिक्री कीमत (₹)</label>
+<input id="min" type="number" placeholder="1999">
+
+<div class="stats">
+<div>Gross Profit<br><b id="profit">₹0</b></div>
+<div>Margin<br><b id="margin">0%</b></div>
+</div>
+
+<label>Watch की जानकारी</label>
+<textarea id="details" placeholder="जैसे: Black Fossil watch, premium design"></textarea>
+
+<button onclick="makeCaption()">Caption तैयार करें</button>
+
+<label>Facebook Caption</label>
+<textarea id="caption">⌚ SHARMA WATCH KING SHOP 👑
+
+✨ Stylish Watches | Latest Collection
+📲 Order करने के लिए मैसेज करें
+🚚 Delivery Available
+
+#SharmaWatchShop #WatchCollection</textarea>
+
+<button onclick="copyCaption()">Caption Copy करें</button>
+<button onclick="checkPrice()">Publish की जाँच करें</button>
+<p id="status" class="note"></p>
+<p class="note">यह पहला Web version है। Facebook पर असली पोस्ट प्रकाशित करने की सुविधा अभी backend से जोड़नी और test करनी बाकी है।</p>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+function calc(){
+let c=Number($('cost').value)||0,p=Number($('price').value)||0;
+$('profit').textContent='₹'+(p-c).toLocaleString('en-IN');
+$('margin').textContent=(p?((p-c)/p*100):0).toFixed(1)+'%';
+}
+['cost','price','min'].forEach(id=>$(id).addEventListener('input',calc));
+$('photo').addEventListener('change',()=>{
+const f=$('photo').files[0];
+if(f){$('preview').src=URL.createObjectURL(f);$('preview').style.display='block';}
+});
+function makeCaption(){
+let p=$('price').value||'कीमत पूछें';
+let d=$('details').value.trim()||'Stylish Watch | Premium Look';
+$('caption').value=`⌚ SHARMA WATCH KING SHOP 👑
+
+${d}
+✨ Stylish Design | Latest Collection
+💰 Price: ₹${p}
+📲 Order करने के लिए मैसेज करें
+🚚 Delivery Available
+
+#SharmaWatchShop #WatchCollection #MensWatch`;
+}
+function copyCaption(){
+$('caption').select();
+if(navigator.clipboard){
+navigator.clipboard.writeText($('caption').value)
+.then(()=>$('status').textContent='Caption copy हो गया।')
+.catch(()=>$('status').textContent='Caption select हुआ है। Copy चुनें।');
+}else{$('status').textContent='Caption select करें और Copy दबाएँ।';}
+}
+function checkPrice(){
+let p=Number($('price').value),m=Number($('min').value)||0;
+if(!p){$('status').textContent='पहले बिक्री कीमत भरें।';return;}
+if(p<m){$('status').textContent='⛔ कीमत न्यूनतम ₹'+m+' से कम है। Publish न करें।';return;}
+$('status').textContent='कीमत का नियम सही है। Facebook publishing अभी जोड़ी नहीं गई है।';
+}
+</script>
+</body>
+</html>
